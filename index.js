@@ -1,7 +1,7 @@
 const PRODUCTS = [
         {
           nombre: "Camisa de rayas",
-          imagen: "https://ae01.alicdn.com/kf/HTB18kfJeBaE3KVjSZLeq6xsSFXaN.jpg_640x640Q90.jpg_.webp",
+          imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHRI05ysog9zc2gUhTmTIZbZGdOm3Jkl3Uxw&usqp=CAU",
           precio: 29.99,
           categoria: "Hombre",
           valoraciones: 2.3
@@ -50,14 +50,14 @@ const PRODUCTS = [
         },
         {
           nombre: "Blusa de seda",
-          imagen: "https://ae01.alicdn.com/kf/H86af06c08c9448da9557ad4c81b654b9C/Blusa-de-seda-satinada-camisa-negra-de-manga-larga-para-mujer-Tops-de-oficina-a-la.jpg",
+          imagen: "https://i.pinimg.com/236x/f7/a0/bd/f7a0bd75cc1fd9cec3853432ce89d1ba.jpg",
           precio: 54.99,
           categoria: "Mujer",
           valoraciones: 4.2
         },
         {
           nombre: "Vaqueros desgastados",
-          imagen: "https://ae01.alicdn.com/kf/Hd9797934cc05447cbd9c057432ca80364.jpg_640x640Q90.jpg_.webp",
+          imagen: "https://d3en8d2cl9etnr.cloudfront.net/523789-large_default/black-skinny-jeans-men-ripped-distressed-jeans-casual-hole-summer-stre.jpg",
           precio: 49.99,
           categoria: "Hombre",
           valoraciones: 4.7
@@ -85,7 +85,7 @@ const PRODUCTS = [
         },
         {
           nombre: "Bermudas de lino",
-          imagen: "https://ae01.alicdn.com/kf/H438b88f88e814cccb62f1ed33af6c7e4T/Pantalones-cortos-de-lino-con-cintura-el-stica-para-hombre-Bermudas-informales-de-lino-pantalones-cortos.jpg",
+          imagen: "https://m.media-amazon.com/images/I/61UWOZrF+xL._AC_SX425_.jpg",
           precio: 29.99,
           categoria: "Hombre",
           valoraciones: 3.4
@@ -152,12 +152,14 @@ const initProductos = (productos) => {
   main$$.innerHTML = "";
 
   if (productos.length === 0) {
-    const h2$$ = document.createElement("h2"):
+    const h2$$ = document.createElement("h2");
     h2$$.textContent = "No se han encontrado los artículos que deseabas.";
     h2$$.className = "notfound";
     main$$.appendChild(h2$$);
 
     // 2. Ejecuto la función pintar productos pasándole únicamente los productos que he encontrado
+    pintarProductos(PRODUCTS, main$$);
+  } else {
     pintarProductos(productos, main$$);
   }
 };
@@ -187,13 +189,14 @@ const pintarProductos = (products, main$$) => {
     carta$$.appendChild(imgWrp$$);
     carta$$.appendChild(nombre$$);
     carta$$.appendChild(precio$$);
+
   }
 };
 
 const rellenarEstrellas = (divEstrellas$$, valoraciones) => {
-  let estrellas = Math.round(valoraciones)
+  let estrellas = Math.round(valoraciones);
 
-  for (let i = 0; i <= 5; i++) {
+  for (let i = 1; i <= 5; i++) {
     const estrella$$ = document.createElement("img");
     
     if (i <= estrellas) {
@@ -221,13 +224,13 @@ const filtroEstrellas = (aside$$) => {
   filterEstrellas$$.className = "filterEstrellas";
 
   const tituloFiltro$$ = document.createElement("h3");
-  tituloFiltro$$.textContent = "Filtrar por valoraciones":
+  tituloFiltro$$.textContent = "Filtrar por valoraciones";
 
   filterEstrellas$$.appendChild(tituloFiltro$$);
 
   const estrellas$$ = document.createElement("div");
 
-  for (let i = 0; i <= 5; i++) {
+  for (let i = 1; i <= 5; i++) {
     const estrella$$ = document.createElement("img");
 
     estrella$$.className = "estrellafiltradora";
@@ -242,3 +245,143 @@ const filtroEstrellas = (aside$$) => {
   filterEstrellas$$.appendChild(estrellas$$);
   aside$$.appendChild(filterEstrellas$$);
 };
+
+const filtroCategorias = (aside$$) => {
+  const categorias = [];
+
+  for (const producto of PRODUCTS) {
+    if(!categorias.includes(producto.categoria)) {
+      categorias.push(producto.categoria);
+    }
+  }
+  const divCategoria$$ = document.createElement("div");
+
+  divCategoria$$.className = "categorias";
+
+  const tituloFiltro$$ = document.createElement("h3");
+  tituloFiltro$$.textContent = "Filtrar por categoría";
+
+  divCategoria$$.appendChild(tituloFiltro$$);
+
+  for (const categoria of categorias) {
+    const categoria$$ = document.createElement("div");
+    const label$$ = document.createElement("label");
+    const checkbox$$ = document.createElement("input");
+
+    checkbox$$.type = "checkbox";
+    categoria$$.className = "categoria";
+    label$$.textContent = categoria;
+    checkbox$$.id = categoria;
+    label$$.setAttribute("for", categoria);
+
+    divCategoria$$.appendChild(categoria$$);
+    categoria$$.appendChild(label$$);
+    categoria$$.appendChild(checkbox$$);
+
+    checkbox$$.addEventListener("change", (e) => filtrarCategoria(e, label$$))
+  }
+  aside$$.appendChild(divCategoria$$);
+};
+
+const filtrarEstrellas = (e) => {
+  const allStars = document.querySelectorAll(".estrellaFiltradora");
+
+  for (let i = 0; i < allStars.length; i++) {
+    if (i <= e.target.id - 1) {
+      allStars[i].src = "./assets/estrella.png";
+    } else {
+      allStars[i].src = "./assets/estrellavacia.png";
+    }
+  }
+
+  let filteredStars = [];
+
+  if (FILTERED.length) {
+    filteredStars = FILTERED.filter((producto) => Math.round(producto.valoraciones) >= parseInt(e.target.id))
+  } else {
+    filteredStars = PRODUCTS.filter((producto) => Math.round(producto.valoraciones) >= parseInt(e.target.id))
+  };
+  initProductos(filteredStars);
+};
+
+const filtrarCategoria = (e, label$$) => {
+  if (e.target.checked) {
+    label$$.classList.add("seleccionado");
+
+  // Método some de arrays para saber si hay algún elemento dentro del array que coinciad con la condición
+  if (!FILTERED.some((producto) => producto.categoria === e.target.id)) {
+    FILTERED = [
+      ...FILTERED,
+      ...PRODUCTS.filter((producto) => producto.categoria === e.target.id)
+    ];
+    initProductos(FILTERED);
+  }
+  } else {
+    label$$.classList.remove("seleccionado");
+
+    FILTERED = FILTERED.filter((producto) => producto.categoria !== e.target.id);
+
+    initProductos(FILTERED);
+  }
+};
+
+const filtroNombre = (aside$$) => {
+  const divNombre$$ = document.createElement("div");
+  const buscador$$ = document.createElement("div");
+  const input$$ = document.createElement("input");
+  const icon$$ = document.createElement("img");
+
+  const tituloFiltro$$ = document.createElement("h3");
+  tituloFiltro$$.textContent = "Filtrar por nombre";
+  divNombre$$.className = "nombres";
+
+  divNombre$$.appendChild(tituloFiltro$$);
+
+  icon$$.src = "./assets/lupa.png";
+  buscador$$.className = "buscador";
+
+  buscador$$.appendChild(input$$);
+  buscador$$.appendChild(icon$$);
+  divNombre$$.appendChild(buscador$$);
+  aside$$.appendChild(divNombre$$);
+
+  icon$$.addEventListener("click", () => abrirBuscador(buscador$$));
+  input$$.addEventListener("input", filtrarNombre);
+};
+
+const abrirBuscador = (buscador$$) => {
+  buscador$$.classList.add("mostrar");
+};
+
+const filtrarNombre = (e) => {
+  let filteredName = [];
+
+  if (FILTERED.length) {
+    filteredName = FILTERED.filter((producto) => 
+    producto.nombre.toLowerCase().includes(e.target.value.toLowerCase()))
+  } else {
+    filteredName = PRODUCTS.filter((producto) => producto.nombre.toLowerCase().includes(e.target.value.toLowerCase()))
+  }
+  initProductos(filteredName)
+};
+
+pintarFiltros();
+
+
+const menu$$ = document.querySelector(".menu");
+
+let abierto = false;
+
+const abrirMenu = () => {
+  const aside$$ = document.querySelector("aside");
+
+  if (abierto) {
+    aside$$.style.width = "0px";
+    abierto = false;
+  } else {
+    aside$$.style.width = "70%";
+    abierto = true;
+  }
+}
+
+menu$$.addEventListener("click", abrirMenu);
